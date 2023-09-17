@@ -1,0 +1,26 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%--
+  Created by IntelliJ IDEA.
+  User: szuum
+  Date: 17.09.2023
+  Time: 16:08
+  To change this template use File | Settings | File Templates.
+--%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<html>
+<head>
+    <title>Title</title>
+</head>
+<body>
+<ul>
+    <c:forEach items="${authors}" var="author">
+        <li>
+            ${author.fullName}
+            <button onclick="javascript:location.href='form?id=${author.id}'">Edit</button>
+            <button onclick="javascript:location.href='confirmDelete?id=${author.id}'">Delete</button>
+        </li>
+    </c:forEach>
+</ul>
+<button onclick="javascript:location.href='form'">Add author</button>
+</body>
+</html>

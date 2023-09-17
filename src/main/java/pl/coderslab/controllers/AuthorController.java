@@ -1,10 +1,8 @@
 package pl.coderslab.controllers;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
 import pl.coderslab.dao.AuthorDao;
 import pl.coderslab.model.Author;
 
@@ -45,16 +43,37 @@ public class AuthorController {
     }
 
     @RequestMapping("/delete")
-    @ResponseBody
     public String delete(@RequestParam Long id) {
         Author author = authorDao.getById(id);
         authorDao.delete(author);
-        return "Author deleted";
+        return "redirect:/author/list";
     }
 
-    @RequestMapping("/getAll")
-    @ResponseBody
-    public String getAll() {
-        return authorDao.getAll().toString();
+    @RequestMapping("/list")
+    public String getAll(Model model) {
+        model.addAttribute("authors", authorDao.getAll());
+        return "author/list";
+    }
+
+    @GetMapping("/form")
+    public String formAdd(@RequestParam(required = false) Long id, Model model) {
+        Author author = new Author();
+        if (id != null && authorDao.getById(id) != null) {
+            author = authorDao.getById(id);
+        }
+        model.addAttribute("author", author);
+        return "author/addForm";
+    }
+
+    @PostMapping("/form")
+    public String addAuthor(Author author) {
+        authorDao.update(author);
+        return "redirect:/author/list";
+    }
+
+    @RequestMapping("/confirmDelete")
+    public String confirmDelete(@RequestParam Long id, Model model) {
+        model.addAttribute("author", authorDao.getById(id));
+        return "author/confirmDelete";
     }
 }
