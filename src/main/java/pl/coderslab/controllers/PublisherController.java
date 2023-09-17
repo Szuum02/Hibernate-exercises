@@ -1,10 +1,8 @@
 package pl.coderslab.controllers;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
 import pl.coderslab.dao.PublisherDao;
 import pl.coderslab.model.Publisher;
 
@@ -42,16 +40,37 @@ public class PublisherController {
     }
 
     @RequestMapping("/delete")
-    @ResponseBody
     public String delete(@RequestParam Long id) {
         Publisher publisher = publisherDao.getById(id);
         publisherDao.delete(publisher);
-        return "Publisher deleted";
+        return "redirect:/publisher/list";
     }
 
-    @RequestMapping("getAll")
-    @ResponseBody
-    public String getAll() {
-        return publisherDao.getAll().toString();
+    @RequestMapping("/list")
+    public String getAll(Model model) {
+        model.addAttribute("publishers", publisherDao.getAll());
+        return "publisher/list";
+    }
+
+    @GetMapping("/form")
+    public String form(@RequestParam(required = false) Long id,  Model model) {
+        Publisher publisher = new Publisher();
+        if (id != null && publisherDao.getById(id) != null) {
+            publisher = publisherDao.getById(id);
+        }
+        model.addAttribute("publisher", publisher);
+        return "publisher/addForm";
+    }
+
+    @PostMapping("/form")
+    public String updatePublisher(Publisher publisher) {
+        publisherDao.update(publisher);
+        return "redirect:/publisher/list";
+    }
+
+    @RequestMapping("/confirmDelete")
+    public String confirmDelete(@RequestParam Long id, Model model) {
+        model.addAttribute("publisher", publisherDao.getById(id));
+        return "publisher/confirmDelete";
     }
 }
